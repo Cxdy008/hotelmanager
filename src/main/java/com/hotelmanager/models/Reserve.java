@@ -3,13 +3,15 @@ package com.hotelmanager.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Entity
-@Table(name = "rooms")
+@Table(name = "reserves ")
 public class Reserve {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "guest_id")

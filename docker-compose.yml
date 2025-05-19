@@ -4,7 +4,7 @@ services:
     container_name: postgres-container
     environment:
       POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_PASSWORD: password2025
       POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"

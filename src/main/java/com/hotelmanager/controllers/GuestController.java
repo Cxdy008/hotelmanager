@@ -1,4 +1,4 @@
 package com.hotelmanager.controllers;
 
-public class ServiceController {
+public class GuestController {
 }
