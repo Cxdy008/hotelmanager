@@ -10,7 +10,7 @@ import java.util.UUID;
 @Table(name = "reserves ")
 public class Reserve {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
     @ManyToOne

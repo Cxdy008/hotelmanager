@@ -3,12 +3,11 @@ package com.hotelmanager.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
+import com.hotelmanager.enums.GuestRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.hotelmanager.enums.Role;
 
-//import javax.management.relation.Role;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,7 +38,7 @@ public class Guest implements Serializable, UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private GuestRole role;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "guest", fetch = FetchType.LAZY)
@@ -47,12 +46,18 @@ public class Guest implements Serializable, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name() ));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        if(this.role == GuestRole.ADMIN){
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_RECEPTION"),
+                    new SimpleGrantedAuthority("ROLE_GUEST"));
+        } else if(this.role == GuestRole.RECEPTION){
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_RECEPTION"),
+                    new SimpleGrantedAuthority("ROLE_GUEST"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_GUEST"));
+        }
     }
 
     @Override
@@ -63,20 +68,24 @@ public class Guest implements Serializable, UserDetails {
     @Override
     public boolean isAccountNonExpired() {
         return true;
+        //return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
         return true;
+        //return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+        //return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
         return true;
+        //return UserDetails.super.isEnabled();
     }
 }
