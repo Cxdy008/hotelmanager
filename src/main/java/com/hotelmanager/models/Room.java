@@ -20,4 +20,8 @@ public class Room {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private RoomStatus status;
+
+    public boolean isAvailable() {
+        return status == RoomStatus.DISPOSED;
+    }
 }
