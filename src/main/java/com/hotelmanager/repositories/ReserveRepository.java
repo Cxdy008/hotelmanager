@@ -1,6 +1,7 @@
 package com.hotelmanager.repositories;
 
 import com.hotelmanager.enums.ReservationStatus;
+import com.hotelmanager.models.Guest;
 import com.hotelmanager.models.Reserve;
 import com.hotelmanager.models.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,10 @@ public interface ReserveRepository extends JpaRepository<Reserve, UUID> {
 
     @Query("SELECT r FROM Reserve r WHERE r.checkout = :date AND r.status = 'ACTIVE'")
     List<Reserve> findReservationsEndingToday(@Param("date") LocalDate date);
+
+    List<Reserve> findByRoomNumberAndDateRange(int roomNumber, LocalDate checkin, LocalDate checkout, ReservationStatus reservationStatus);
+
+    List<Reserve> findByGuest(Guest guest);
+
+    Long countByStatus(ReservationStatus status);
 }

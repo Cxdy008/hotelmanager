@@ -12,4 +12,6 @@ public interface GuestRepository extends JpaRepository<Guest, Integer> {
     boolean existsByDocument(String document);
 
     Map<Object, Object> findByUsername(String admin);
+
+    boolean hasActiveReservations(Integer id);
 }
