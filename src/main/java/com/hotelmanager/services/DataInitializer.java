@@ -7,19 +7,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-    private GuestRepository guestRepository;
+    private final GuestRepository guestRepository;
 
-    private BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-
-        if(guestRepository.findByUsername("Admin").isEmpty()) {
+        if (guestRepository.findByEmail("admin@mail.com").isEmpty()) { // Changed from findByUsername
             Guest guest = new Guest();
             guest.setName("Admin");
             guest.setEmail("admin@mail.com");

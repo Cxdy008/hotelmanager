@@ -15,8 +15,8 @@ public class AuthorizationService implements UserDetailsService {
     GuestRepository guestRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Guest guest = guestRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Guest guest = guestRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new org.springframework.security.core.userdetails.User(guest.getEmail(), guest.getPassword(), guest.getAuthorities());
     }
 }

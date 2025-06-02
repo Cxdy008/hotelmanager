@@ -13,11 +13,11 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     List<Room> findByStatus(RoomStatus status);
 
-    List<Room> findByRoomType(RoomType roomType);
+    List<Room> findByType(RoomType roomType);
 
-    List<Room> findByStatusAndRoomType(RoomStatus status, RoomType roomType);
+    List<Room> findByStatusAndType(RoomStatus status, RoomType type);
 
-    @Query("SELECT r FROM Room r WHERE r.status = 'AVAILABLE' AND r.roomType = :roomType")
+    @Query("SELECT r FROM Room r WHERE r.status = 'AVAILABLE' AND r.type = :roomType")
     List<Room> findAvailableRoomsByType(@Param("roomType") RoomType roomType);
 
     @Query("SELECT COUNT(r) FROM Room r WHERE r.status = :status")

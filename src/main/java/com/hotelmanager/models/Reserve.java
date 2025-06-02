@@ -13,8 +13,8 @@ import java.util.UUID;
 @Table(name = "reserves ")
 public class Reserve {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "guest_id")

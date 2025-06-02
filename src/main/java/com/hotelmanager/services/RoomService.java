@@ -49,7 +49,7 @@ public class RoomService {
 
     // Buscar quartos por tipo
     public List<Room> getRoomsByType(RoomType roomType) {
-        return roomRepository.findByRoomType(roomType);
+        return roomRepository.findByType(roomType);
     }
 
     // Buscar quartos disponíveis por tipo

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface ReserveRepository extends JpaRepository<Reserve, UUID> {
+public interface ReserveRepository extends JpaRepository<Reserve, Integer> {
     List<Reserve> findByStatus(ReservationStatus status);
 
     List<Reserve> findByCheckinBetween(LocalDate startDate, LocalDate endDate);
@@ -21,7 +21,7 @@ public interface ReserveRepository extends JpaRepository<Reserve, UUID> {
 
     List<Reserve> findByRoomAndStatus(Room room, ReservationStatus status);
 
-    List<Reserve> findByGuestId(UUID guestId);
+    List<Reserve> findByGuestId(Integer guestId);
 
     @Query("SELECT r FROM Reserve r WHERE r.checkout < :date AND r.status = 'ACTIVE'")
     List<Reserve> findExpiredActiveReservations(@Param("date") LocalDate date);
@@ -29,7 +29,12 @@ public interface ReserveRepository extends JpaRepository<Reserve, UUID> {
     @Query("SELECT r FROM Reserve r WHERE r.checkout = :date AND r.status = 'ACTIVE'")
     List<Reserve> findReservationsEndingToday(@Param("date") LocalDate date);
 
-    List<Reserve> findByRoomNumberAndDateRange(int roomNumber, LocalDate checkin, LocalDate checkout, ReservationStatus reservationStatus);
+    @Query("SELECT r FROM Reserve r JOIN r.room rm WHERE rm.number = :roomNumber AND r.checkin <= :checkout AND r.checkout >= :checkin AND r.status = :status")
+    List<Reserve> findByRoomNumberAndDateRange(
+            @Param("roomNumber") int roomNumber,
+            @Param("checkin") LocalDate checkin,
+            @Param("checkout") LocalDate checkout,
+            @Param("status") ReservationStatus status);
 
     List<Reserve> findByGuest(Guest guest);
 

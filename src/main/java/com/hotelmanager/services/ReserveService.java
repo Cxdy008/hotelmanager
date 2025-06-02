@@ -3,6 +3,7 @@ package com.hotelmanager.services;
 import com.hotelmanager.dtos.ReserveDTO;
 import com.hotelmanager.enums.ReservationStatus;
 import com.hotelmanager.enums.RoomStatus;
+import com.hotelmanager.exceptions.ValidationException;
 import com.hotelmanager.models.Guest;
 import com.hotelmanager.models.Reserve;
 import com.hotelmanager.models.Room;
@@ -35,18 +36,18 @@ public class ReserveService {
     public Reserve createReserve(ReserveDTO reserveDTO, String guestEmail) {
         // Validar datas
         if (reserveDTO.checkIn().isAfter(reserveDTO.checkOut())) {
-            throw new IllegalArgumentException("Data de check-in não pode ser posterior à data de check-out");
+            throw new ValidationException("Data de check-in não pode ser posterior à data de check-out");
         }
 
         // Verificar se o quarto existe e está disponível
         Room room = roomService.findById(reserveDTO.roomNumber());
         if (room.getStatus() != RoomStatus.DISPOSED) {
-            throw new IllegalStateException("Quarto " + room.getNumber() + " não está disponível");
+            throw new ValidationException("Quarto " + room.getNumber() + " não está disponível");
         }
 
         // Verificar se o quarto está reservado no período solicitado
         if (isRoomReserved(room.getNumber(), reserveDTO.checkIn(), reserveDTO.checkOut())) {
-            throw new IllegalStateException("Quarto " + room.getNumber() + " já está reservado para o período solicitado");
+            throw new ValidationException("Quarto " + room.getNumber() + " já está reservado para o período solicitado");
         }
 
         // Buscar hóspede pelo email do token JWT
@@ -74,7 +75,7 @@ public class ReserveService {
     }
 
     // Buscar reserva por ID
-    public Reserve findById(UUID id) {
+    public Reserve findById(Integer id) {
         return reserveRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Reserva " + id + " não encontrada"));
     }
@@ -91,7 +92,7 @@ public class ReserveService {
     }
 
     // Cancelar uma reserva
-    public Reserve cancelReserve(UUID reserveId, String guestEmail) {
+    public Reserve cancelReserve(Integer reserveId, String guestEmail) {
         Reserve reserve = findById(reserveId);
 
         // Verificar se o usuário tem permissão para cancelar (baseado no email)
@@ -101,7 +102,7 @@ public class ReserveService {
 
         // Verificar se a reserva já está cancelada
         if (reserve.getStatus() == ReservationStatus.CANCELLED) {
-            throw new IllegalStateException("Reserva já está cancelada");
+            throw new ValidationException("Reserva já está cancelada");
         }
 
         // Atualizar status da reserva
@@ -114,7 +115,7 @@ public class ReserveService {
     }
 
     // Atualizar uma reserva (exemplo: mudar datas ou quarto)
-    public Reserve updateReserve(UUID reserveId, ReserveDTO reserveDTO, String guestEmail) {
+    public Reserve updateReserve(Integer reserveId, ReserveDTO reserveDTO, String guestEmail) {
         Reserve reserve = findById(reserveId);
 
         // Verificar permissão

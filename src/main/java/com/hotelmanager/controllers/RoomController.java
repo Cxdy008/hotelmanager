@@ -1,5 +1,6 @@
 package com.hotelmanager.controllers;
 
+import com.hotelmanager.dtos.RoomDTO;
 import com.hotelmanager.enums.RoomStatus;
 import com.hotelmanager.enums.RoomType;
 import com.hotelmanager.models.Room;
@@ -19,27 +20,30 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAllRooms() {
-        return ResponseEntity.ok(roomService.getAllRooms());
+    public ResponseEntity<List<RoomDTO>> getAllRooms() {
+        return ResponseEntity.ok(roomService.getAllRooms().stream().map(this::toRoomDTO).toList());
     }
 
     @GetMapping("/{roomNumber}")
-    public ResponseEntity<Room> getRoomById(@PathVariable int roomNumber) {
+    public ResponseEntity<RoomDTO> getRoomById(@PathVariable int roomNumber) {
         try {
             Room room = roomService.findById(roomNumber);
-            return ResponseEntity.ok(room);
+            return ResponseEntity.ok(toRoomDTO(room));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PatchMapping("/{roomNumber}/status")
-    public ResponseEntity<Room> updateRoomStatus(@PathVariable int roomNumber,
-                                                 @RequestBody Map<String, String> statusUpdate) {
+    public ResponseEntity<RoomDTO> updateRoomStatus(@PathVariable int roomNumber,
+                                                    @RequestBody RoomDTO roomDTO) {
         try {
-            RoomStatus newStatus = RoomStatus.valueOf(statusUpdate.get("status"));
+            RoomStatus newStatus = roomDTO.status();
+            if (newStatus == null) {
+                return ResponseEntity.badRequest().build();
+            }
             Room updated = roomService.updateRoomStatus(roomNumber, newStatus);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(toRoomDTO(updated));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
@@ -48,40 +52,40 @@ public class RoomController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<Room>> getAvailableRooms() {
-        return ResponseEntity.ok(roomService.getAvailableRooms());
+    public ResponseEntity<List<RoomDTO>> getAvailableRooms() {
+        return ResponseEntity.ok(roomService.getAvailableRooms().stream().map(this::toRoomDTO).toList());
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<Room>> getRoomsByStatus(@PathVariable RoomStatus status) {
-        return ResponseEntity.ok(roomService.getRoomsByStatus(status));
+    public ResponseEntity<List<RoomDTO>> getRoomsByStatus(@PathVariable RoomStatus status) {
+        return ResponseEntity.ok(roomService.getRoomsByStatus(status).stream().map(this::toRoomDTO).toList());
     }
 
     @GetMapping("/type/{roomType}")
-    public ResponseEntity<List<Room>> getRoomsByType(@PathVariable RoomType roomType) {
-        return ResponseEntity.ok(roomService.getRoomsByType(roomType));
+    public ResponseEntity<List<RoomDTO>> getRoomsByType(@PathVariable RoomType roomType) {
+        return ResponseEntity.ok(roomService.getRoomsByType(roomType).stream().map(this::toRoomDTO).toList());
     }
 
     @GetMapping("/available/type/{roomType}")
-    public ResponseEntity<List<Room>> getAvailableRoomsByType(@PathVariable RoomType roomType) {
-        return ResponseEntity.ok(roomService.getAvailableRoomsByType(roomType));
+    public ResponseEntity<List<RoomDTO>> getAvailableRoomsByType(@PathVariable RoomType roomType) {
+        return ResponseEntity.ok(roomService.getAvailableRoomsByType(roomType).stream().map(this::toRoomDTO).toList());
     }
 
     @PostMapping("/{roomNumber}/maintenance")
-    public ResponseEntity<Room> setRoomMaintenance(@PathVariable int roomNumber) {
+    public ResponseEntity<RoomDTO> setRoomMaintenance(@PathVariable int roomNumber) {
         try {
             Room updated = roomService.setRoomMaintenance(roomNumber);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(toRoomDTO(updated));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/{roomNumber}/release")
-    public ResponseEntity<Room> releaseRoom(@PathVariable int roomNumber) {
+    public ResponseEntity<RoomDTO> setRoomRelease(@PathVariable int roomNumber) {
         try {
             Room updated = roomService.releaseRoom(roomNumber);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(toRoomDTO(updated));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -90,5 +94,9 @@ public class RoomController {
     @GetMapping("/statistics")
     public ResponseEntity<Map<RoomStatus, Long>> getRoomStatistics() {
         return ResponseEntity.ok(roomService.getRoomStatusStatistics());
+    }
+
+    private RoomDTO toRoomDTO(Room room) {
+        return new RoomDTO(room.getNumber(), room.getStatus(), room.getType());
     }
 }

@@ -106,18 +106,20 @@ public class AuthenticationService {
         if (data.password() == null || data.password().trim().isEmpty()) {
             throw new ValidationException("Password is required");
         }
+        /*
         if (data.role() == null || data.role().trim().isEmpty()) {
             throw new ValidationException("Role is required");
-        }
+        }*/
         if (!isValidEmail(data.email())) {
             throw new ValidationException("Invalid email format");
         }
         if (data.password().length() < 6) {
             throw new ValidationException("Password must be at least 6 characters long");
         }
+        /*
         if (!isValidRole(data.role())) {
             throw new ValidationException("Invalid role. Must be ADMIN, RECEPTION, or GUEST");
-        }
+        }*/
     }
 
     private Guest createGuestFromDTO(RegisterRequestDTO data) {
@@ -127,7 +129,7 @@ public class AuthenticationService {
         guest.setPhone(data.phone() != null ? data.phone().trim() : null);
         guest.setDocument(data.document() != null ? data.document().trim() : null);
         guest.setPassword(passwordEncoder.encode(data.password()));
-        guest.setRole(GuestRole.valueOf(data.role().toUpperCase()));
+        guest.setRole(GuestRole.GUEST);
         return guest;
     }
 

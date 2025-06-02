@@ -2,6 +2,7 @@ package com.hotelmanager.services;
 
 import com.hotelmanager.dtos.GuestDTO;
 import com.hotelmanager.enums.GuestRole;
+import com.hotelmanager.exceptions.ValidationException;
 import com.hotelmanager.models.Guest;
 import com.hotelmanager.repositories.GuestRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -49,13 +50,13 @@ public class GuestService {
 
         // Verificar se o novo email (se alterado) já está em uso por outro hóspede
         if (!guestDTO.getEmail().equals(guest.getEmail()) && guestRepository.findByEmail(guestDTO.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email " + guestDTO.getEmail() + " já está registrado");
+            throw new ValidationException("Email " + guestDTO.getEmail() + " já está registrado");
         }
 
         // Verificar se o novo documento (se alterado) já está em uso
         if (guestDTO.getDocumentNumber() != null && !guestDTO.getDocumentNumber().equals(guest.getDocument())
                 && guestRepository.existsByDocument(guestDTO.getDocumentNumber())) {
-            throw new IllegalArgumentException("Documento " + guestDTO.getDocumentNumber() + " já está registrado");
+            throw new ValidationException("Documento " + guestDTO.getDocumentNumber() + " já está registrado");
         }
 
         // Atualizar campos
@@ -78,7 +79,7 @@ public class GuestService {
 
         // Verificar se o hóspede tem reservas ativas
         if (guestRepository.hasActiveReservations(id)) {
-            throw new IllegalStateException("Hóspede possui reservas ativas e não pode ser deletado");
+            throw new ValidationException("Hóspede possui reservas ativas e não pode ser deletado");
         }
 
         guestRepository.delete(guest);
