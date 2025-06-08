@@ -37,7 +37,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers("/api/reserves/my-reserves").hasAnyRole("GUEST", "RECEPTION", "ADMIN")
-                        .requestMatchers("/api/reserves/status/**", "/api/reserves/statistics").hasRole("ADMIN")
+                        .requestMatchers("/api/reserves/status/**", "/api/reserves/statistics").hasAnyRole("GUEST", "RECEPTION", "ADMIN")
                         .requestMatchers("/api/reserves/**").hasAnyRole("GUEST", "RECEPTION", "ADMIN")
                         .anyRequest().authenticated()
                 )
